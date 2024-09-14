@@ -1,3 +1,25 @@
 server:
   port:
     8080
+
+# JPA
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/gil_beot_DB?serverTimezone=Asia/Seoul
+    username: root
+    password: hee41876455
+  jpa:
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQLDialect
+    show-sql: true
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
+
+app:
+  config:
+    secret_key: "m3eIBy%2FN2oGV%2F5EeP1C5UpeJOFhWUsaSvP0xFyN9HODX7LgNVRDnPSsiR0NCjPSe7TYEkwfT550QJ0IvMOs6JQ%3D%3D"
+
