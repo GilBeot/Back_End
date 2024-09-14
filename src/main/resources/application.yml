@@ -1,7 +1,3 @@
-server:
-  port:
-    8080
-
 # JPA
 spring:
   datasource:
@@ -23,3 +19,6 @@ app:
   config:
     secret_key: "m3eIBy%2FN2oGV%2F5EeP1C5UpeJOFhWUsaSvP0xFyN9HODX7LgNVRDnPSsiR0NCjPSe7TYEkwfT550QJ0IvMOs6JQ%3D%3D"
 
+jwt:
+    issuer: gilbeotadmin
+    secret: KJHA823jlkJLKJ893jlkjLKJLJ123lkLKJ9xLk23
