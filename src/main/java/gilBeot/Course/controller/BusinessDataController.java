@@ -37,6 +37,6 @@ public class BusinessDataController {
     @GetMapping("/courseList")
     private void loadCourseList() throws URISyntaxException, ParseException, InterruptedException {
         this.businessDataService.loadCourseList();
-        // avc
+        // atest22
     }
 }
