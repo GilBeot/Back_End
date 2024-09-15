@@ -33,7 +33,6 @@ public class course {
     private String Y;
     @Column
     private int cnt;
-
     @Column
     private String gpxLink;
 
