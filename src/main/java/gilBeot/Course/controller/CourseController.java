@@ -38,10 +38,6 @@ public class CourseController {
     private ResponseEntity<List<getRouteListDto>> getRouteList() {
         return new ResponseEntity<>(this.businessDataService.getClientRouteList(), HttpStatus.OK);
     }
-    @GetMapping("/courseList")
-    private void loadCourseList() throws URISyntaxException, ParseException, InterruptedException {
-        this.businessDataService.loadCourseList();
-    }
 
     /**
      *

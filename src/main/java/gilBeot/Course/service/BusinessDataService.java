@@ -250,10 +250,13 @@ public class BusinessDataService {
         Workbook workbook = WorkbookFactory.create(fileInputStream);
         Sheet sheet = workbook.getSheetAt(0);
 
+        //System.out.println(sheet.getRow(0).);
+
         for(Row row : sheet){
             for(Cell cell : row){
                 System.out.print(cell + " ");
             }
+            break;
         }
     }
 
