@@ -5,12 +5,10 @@ import gilBeot.Course.Repository.ToiletRepository;
 import gilBeot.Course.dto.response.courseInfoDto;
 import gilBeot.Course.dto.response.getRouteListDto;
 import gilBeot.Course.dto.response.searchCourseDto;
-import gilBeot.Course.model.course;
-import gilBeot.Course.model.routeList;
-import gilBeot.Course.model.toilet;
-import gilBeot.Course.model.toiletInfo;
+import gilBeot.Course.model.*;
 import jakarta.transaction.Transactional;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.xml.security.parser.XMLParser;
 import org.json.XML;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -21,13 +19,27 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.math.BigDecimal;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import static java.util.Arrays.asList;
 
 @Service
 public class BusinessDataService {
@@ -146,6 +158,7 @@ public class BusinessDataService {
                     .gpxLink((String) nowValue.get("gpxpath"))
                     .cnt(0)
                     .build();
+
             this.courseRepository.save(Course);
         }
     }
@@ -227,37 +240,157 @@ public class BusinessDataService {
 
     public void createToilet(){
         this.toiletRepository.save(toilet.builder()
-                .seoul(new ArrayList<>())
+                .toiletInfoList(new ArrayList<>())
+//                .busan(new ArrayList<>())
+//                .daegu(new ArrayList<>())
+//                .incheon(new ArrayList<>())
+//                .gwangju(new ArrayList<>())
+//                .daejeon(new ArrayList<>())
+//                .ulsan(new ArrayList<>())
+//                .sejong(new ArrayList<>())
+//                .gyeonggi(new ArrayList<>())
+//                .gangwon(new ArrayList<>())
+//                .chungbuk(new ArrayList<>())
+//                .chungnam(new ArrayList<>())
+//                .jeonbuk(new ArrayList<>())
+//                .jeonnam(new ArrayList<>())
+//                .gyeongbuk(new ArrayList<>())
+//                .gyeongnam(new ArrayList<>())
+//                .jeju(new ArrayList<>())
                 .build());
     }
+
+
     @Transactional
-    public String toiletPointData(){
-        List<toilet> toilets = this.toiletRepository.findAll();
+    public String readExel(String fileName) throws IOException {
+        String filePath = "/Users/chobeomhee/Desktop/" + fileName + ".csv";
 
-        toilet t = toilets.get(0);
+        List<Map<String, Object>> mapList = new ArrayList<Map<String, Object>>();
 
-        t.getSeoul().add(toiletInfo.builder().
-                name("화장실이름")
-                .build());
-        return "dd";
+        List<String> headerList = new ArrayList<String>();
+
+        try{
+            BufferedReader br = Files.newBufferedReader(Paths.get(filePath));
+            String line = "";
+
+            while((line = br.readLine()) != null){
+                List<String> stringList = new ArrayList<>();
+                String[] stringArray = line.split(",");
+
+                stringList = asList(stringArray);
+
+                // csv 1열 데이터를 header로 인식
+                if(headerList.isEmpty()){
+                    headerList = stringList;
+                } else {
+                    Map<String, Object> map = new HashMap<String, Object>();
+                    // header 컬럼 개수를 기준으로 데이터 set
+                    int idx = Math.min(headerList.size(), stringList.size());
+                    if(headerList.size() != stringList.size()) continue;
+                    for(int i = 0; i < idx; i++){
+                        map.put(headerList.get(i).replaceAll("\"", ""), stringList.get(i).replaceAll("\"", ""));
+                    }
+                    mapList.add(map);
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+
+            return fileName + " 파일 읽던 중 문제 발생";
+        }
+
+        for (Map<String, Object> Info : mapList) {
+            System.out.println(Info);
+            System.out.print(Info.get("화장실명"));
+        }
+
+            try{
+            toilet t = toiletRepository.findAll().get(0);
+
+            for (Map<String, Object> Info : mapList) {
+                toiletInfo newData = toiletInfo.builder()
+                        .name((String) Info.get("화장실명"))
+                        .address((String) Info.get("소재지도로명주소"))
+                        .openTime((String) Info.get("개방시간상세"))
+                        .office((String) Info.get("관리기관명"))
+                        .X((String) Info.get("WGS84위도"))
+                        .Y((String) Info.get("WGS84경도"))
+                        .city(fileName)
+                        .build();
+                t.getToiletInfoList().add(newData);
+
+//                switch (fileName) {
+//                    case "서울" -> t.getSeoul().add(newData);
+//                    case "부산" -> t.getBusan().add(newData);
+//                    case "대구" -> t.getDaegu().add(newData);
+//                    case "인천" -> t.getIncheon().add(newData);
+//                    case "광주" -> t.getGwangju().add(newData);
+//                    case "대전" -> t.getDaejeon().add(newData);
+//                    case "울산" -> t.getUlsan().add(newData);
+//                    case "세종" -> t.getSejong().add(newData);
+//                    case "경기" -> t.getGyeonggi().add(newData);
+//                    case "강원" -> t.getGangwon().add(newData);
+//                    case "충북" -> t.getChungbuk().add(newData);
+//                    case "충남" -> t.getChungnam().add(newData);
+//                    case "전북" -> t.getJeonbuk().add(newData);
+//                    case "전남" -> t.getJeonnam().add(newData);
+//                    case "경북" -> t.getGyeongbuk().add(newData);
+//                    case "경남" -> t.getGyeongnam().add(newData);
+//                    case "제주" -> t.getJeju().add(newData);
+//                }
+            }
+        }catch (Exception e){
+            return fileName + " DB삽입 중 문제 발생";
+        }
+
+        return fileName + " 화장실 정보 삽입 성공";
     }
 
-    public void readExel() throws IOException {
-        String filePath = "/Users/chobeomhee/Desktop/SEOUL.xlsx";
+    @Transactional
+    public void courseRoot() throws IOException, URISyntaxException, ParserConfigurationException, SAXException {
+        List<course> AllCourse = this.courseRepository.findAll();
 
-        FileInputStream fileInputStream = new FileInputStream(new File(filePath));
+        for(course c : AllCourse){
+            URL Url = new URL(c.getGpxLink());
 
-        Workbook workbook = WorkbookFactory.create(fileInputStream);
-        Sheet sheet = workbook.getSheetAt(0);
+            ResponseEntity<String> result = this.restClient.get()
+                    .uri(Url.toURI())
+                    .retrieve()
+                    .toEntity(String.class);
 
-        //System.out.println(sheet.getRow(0).);
-
-        for(Row row : sheet){
-            for(Cell cell : row){
-                System.out.print(cell + " ");
+            String[] splitString = result.toString().split("\n");
+            StringBuilder xml = new StringBuilder();
+            for(int i = 1; i < splitString.length - 1; i++){
+                xml.append(splitString[i] + "\n");
             }
-            break;
+
+            try{
+                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                DocumentBuilder builder = factory.newDocumentBuilder();
+                Document document = builder.parse(new InputSource(new StringReader(xml.toString())));
+
+                document.getDocumentElement().normalize();
+
+                NodeList tagList = document.getElementsByTagName("trkpt");
+
+                for (int i = 0; i < tagList.getLength(); i++) {
+                    Element element = (Element) tagList.item(i);
+                    String lat = element.getAttribute("lat");
+                    String lon = element.getAttribute("lon");
+
+                    c.getCourseRoot().add(coursePoint.builder()
+                            .X(lat)
+                            .Y(lon)
+                            .build());
+                }
+            }catch (Exception e){
+
+            }
         }
+    }
+
+    public List<toiletInfo> test(String city){
+        return this.toiletRepository.findByCityToilet(city);
     }
 
     static class Point {

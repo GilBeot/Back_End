@@ -36,6 +36,9 @@ public class course {
     @Column
     private String gpxLink;
 
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<coursePoint> courseRoot;
+
     public void update (String X, String Y){
         this.X = X;
         this.Y = Y;
