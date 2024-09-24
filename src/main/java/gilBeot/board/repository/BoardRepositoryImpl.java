@@ -5,7 +5,9 @@ import gilBeot.board.domain.BoardDomain;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -28,5 +30,12 @@ public class BoardRepositoryImpl implements BoardRepository{
     public Optional<BoardDomain> findById(Long id) {
         return boardJpaRepository.findById(id)
                 .map(boardConverter::toDomain);
+    }
+
+    @Override
+    public List<BoardDomain> findAll() {
+        return boardJpaRepository.findAll().stream()
+                .map(boardConverter::toDomain)
+                .collect(Collectors.toList());
     }
 }

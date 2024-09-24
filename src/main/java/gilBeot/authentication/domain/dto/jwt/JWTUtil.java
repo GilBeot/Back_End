@@ -1,4 +1,4 @@
-package gilBeot.authentication.security.jwt;
+package gilBeot.authentication.domain.dto.jwt;
 
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Value;

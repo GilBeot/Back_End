@@ -1,6 +1,7 @@
 package gilBeot.board.domain;
 
 import gilBeot.board.domain.dto.request.BoardRequestDto;
+import jakarta.persistence.Column;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -11,20 +12,21 @@ import java.time.LocalDateTime;
 public class BoardDomain {
 
     private Long id;
-    private String boardWriter;
-    private String boardTitle;
-    private String boardContents;
+    private String title;
+    private String content;
+    private String author;
 
-    public static BoardDomain create(BoardRequestDto boardRequestDto) {
+    public static BoardDomain create(BoardRequestDto boardRequestDto, String author) {
         return BoardDomain.builder()
-                .boardWriter(boardRequestDto.getBoardWriter())
-                .boardTitle(boardRequestDto.getBoardTitle())
-                .boardContents(boardRequestDto.getBoardContents())
+                .title(boardRequestDto.getTitle())
+                .content(boardRequestDto.getContent())
+                .author(author)
                 .build();
     }
 
     public void update(BoardRequestDto boardRequestDto) {
-        this.boardTitle = boardRequestDto.getBoardTitle();
-        this.boardContents = boardRequestDto.getBoardContents();
+        this.title = boardRequestDto.getTitle();
+        this.content = boardRequestDto.getContent();
     }
+
 }

@@ -1,7 +1,8 @@
-package gilBeot.authentication.security.jwt;
+package gilBeot.authentication.domain.dto.jwt;
 
-import gilBeot.authentication.domain.Member;
-import gilBeot.authentication.dto.CustomUserDetails;
+import gilBeot.authentication.domain.MemberDomain;
+import gilBeot.authentication.entity.MemberEntity;
+import gilBeot.authentication.domain.dto.CustomUserDetails;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -54,13 +55,13 @@ public class JWTFilter extends OncePerRequestFilter { //요청에 대해 한 번
         String role = jwtUtil.getRole(token);
 
         //userEntity를 생성하여 값 set
-        Member member = Member.builder()
+        MemberDomain memberDomain = MemberDomain.builder()
                 .username(username)
                 .password("temppassword")
                 .role(role).build();
 
         //UserDetails에 회원 정보 객체 담기
-        CustomUserDetails customUserDetails = new CustomUserDetails(member);
+        CustomUserDetails customUserDetails = new CustomUserDetails(memberDomain);
 
         //스프링 시큐리티 인증 토큰 생성
         Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());

@@ -1,19 +1,17 @@
 package gilBeot.board.domain.dto.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import gilBeot.board.entity.BaseEntity;
+import jakarta.persistence.*;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class BoardRequestDto {
     private Long id;
-    private String boardWriter;
-    private String boardTitle;
-    private String boardContents;
+    private String title;
+    private String content;
 }

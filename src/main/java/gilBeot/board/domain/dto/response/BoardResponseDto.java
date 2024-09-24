@@ -7,5 +7,9 @@ import lombok.Getter;
 @Builder
 public class BoardResponseDto {
     private Long id;
-    private String response;
+    private String title;
+    private String content;
+    private String author;
+    private String createdTime;
+    private String updatedTime;
 }

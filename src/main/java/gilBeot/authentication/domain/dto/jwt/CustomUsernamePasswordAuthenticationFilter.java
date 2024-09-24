@@ -1,6 +1,7 @@
-package gilBeot.authentication.security.jwt;
+package gilBeot.authentication.domain.dto.jwt;
 
-import gilBeot.authentication.dto.CustomUserDetails;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import gilBeot.authentication.domain.dto.CustomUserDetails;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -12,32 +13,48 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Map;
 
 @RequiredArgsConstructor
-public class LoginFilter extends UsernamePasswordAuthenticationFilter {
+public class CustomUsernamePasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
 
     private final JWTUtil jwtUtil;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
 
-        // 클라이언트 요청에서 username, password 추출
-        String username = obtainUsername(request);
-        String password = obtainPassword(request);
+        try {
+            // ObjectMapper를 사용하여 JSON 요청 바디를 파싱
+            Map<String, String> userCredentials = objectMapper.readValue(request.getInputStream(), Map.class);
 
-        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(username, password, null);
+            String username = userCredentials.get("username");
+            String password = userCredentials.get("password");
 
-        return authenticationManager.authenticate(authToken);
+            // 인증 토큰 생성 : Authentication의 구현체 -> UsernamePasswordAuthenticationToken
+            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(username, password, null);
+
+            // 인증 토큰으로 인증 시도
+            Authentication authentication = authenticationManager.authenticate(authToken);
+            System.out.println(authentication);
+            return authentication;
+//            return authenticationManager.authenticate(authToken);
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) {
+        System.out.println(authentication);
+
         // 로그인이 성공할 때 JWT 토큰을 생성해줌
-//        System.out.println("success");
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
 
         String username = customUserDetails.getUsername();
@@ -55,7 +72,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) {
-//        System.out.println("fail");
         response.setStatus(401);
     }
 }

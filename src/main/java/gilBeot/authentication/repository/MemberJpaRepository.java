@@ -1,17 +1,16 @@
 package gilBeot.authentication.repository;
 
-import gilBeot.authentication.domain.MemberDomain;
 import gilBeot.authentication.entity.MemberEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-public interface MemberRepository {
-
-    MemberDomain save(MemberDomain memberDomain);
+@Repository
+public interface MemberJpaRepository extends JpaRepository<MemberEntity, Long> {
 
     boolean existsByUsername(String username);
 
-    Optional<MemberDomain> findByUsername(String username);
-
+    Optional<MemberEntity> findByUsername(String username);
 }
+

@@ -18,15 +18,19 @@ public class BoardEntity extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "board_id")
     private Long id;
-
-    @Column(length = 20, nullable = false)
-    private String boardWriter;
-
-    private String boardTitle;
-    private String boardContents;
-
+    @Column(nullable = false)
+    private String title;
+    @Column(nullable = false)
+    private String content;
+    @Column(nullable = false)
+    private String author; //작성자(usernmame)
+    // 게시글과 댓글의 관계 (일대다)
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CommentEntity> comments = new ArrayList<>();
 
-
+    // 댓글 추가
+    public void addComment(CommentEntity comment) {
+        this.comments.add(comment);
+        comment.setBoard(this);
+    }
 }

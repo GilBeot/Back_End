@@ -1,6 +1,6 @@
-package gilBeot.authentication.dto;
+package gilBeot.authentication.domain.dto;
 
-import gilBeot.authentication.domain.Member;
+import gilBeot.authentication.domain.MemberDomain;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,7 +11,7 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public class CustomUserDetails implements UserDetails { //DTO
 
-    private final Member member;
+    private final MemberDomain memberDomain;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() { //ROLE 값 반환
@@ -21,7 +21,7 @@ public class CustomUserDetails implements UserDetails { //DTO
         collection.add(new GrantedAuthority() {
             @Override
             public String getAuthority() {
-                return member.getRole();
+                return memberDomain.getRole();
             }
         });
 
@@ -30,12 +30,12 @@ public class CustomUserDetails implements UserDetails { //DTO
 
     @Override
     public String getPassword() {
-        return member.getPassword();
+        return memberDomain.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return member.getUsername();
+        return memberDomain.getUsername();
     }
 
     @Override

@@ -2,22 +2,48 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/gil_beot_DB?serverTimezone=Asia/Seoul
+    url: jdbc:mysql://localhost:3306/test?serverTimezone=Asia/Seoul
     username: root
-    password: hee41876455
+    password: 85218001
   jpa:
     database: mysql
     database-platform: org.hibernate.dialect.MySQLDialect
     show-sql: true
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     properties:
       hibernate:
         format_sql: true
+  security:
+    oauth2:
+      client:
+        registration:
+          kakao:
+            client-name: kakao
+            client-id: 10cc5af2fceaa30c3631d391aeae80fc
+            # client-secret: AgXfPDp3MsIVdevj8HtZEF79Nj7WcSKo
+            scope: profile_nickname
+            authorization-grant-type: authorization_code
+            redirect-uri: http://localhost:8080/login/oauth2/code/kakao
+            client-authentication-method: none
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-name-attribute: id
   jwt:
     issuer: gilbeotadmin
     secret: KJHA823jlkJLKJ893jlkjLKJLJ123lkLKJ9xLk23
+
 app:
   config:
     secret_key: "m3eIBy%2FN2oGV%2F5EeP1C5UpeJOFhWUsaSvP0xFyN9HODX7LgNVRDnPSsiR0NCjPSe7TYEkwfT550QJ0IvMOs6JQ%3D%3D"
 
+#logging:
+#  level:
+#    root: TRACE  # 전체 애플리케이션의 기본 로그 레벨
+#    org.springframework: DEBUG  # 스프링 프레임워크 관련 로그를 DEBUG 레벨로 설정
+#    com.yourpackage: DEBUG  # 본인의 패키지에 대한 로그를 DEBUG 레벨로 설정
+#  pattern:
+#    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"  # 콘솔에 출력될 로그의 형식
