@@ -16,6 +16,8 @@ public class toiletInfo {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
     @Column
+    private String city;
+    @Column
     private String name;
     @Column
     private String address;

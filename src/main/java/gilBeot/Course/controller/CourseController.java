@@ -3,6 +3,7 @@ package gilBeot.Course.controller;
 import gilBeot.Course.dto.response.courseInfoDto;
 import gilBeot.Course.dto.response.getRouteListDto;
 import gilBeot.Course.dto.response.searchCourseDto;
+import gilBeot.Course.dto.response.surroundInfoDto;
 import gilBeot.Course.service.BusinessDataService;
 import gilBeot.Course.service.CourseService;
 import org.json.simple.parser.ParseException;
@@ -68,8 +69,25 @@ public class CourseController {
         return new ResponseEntity<>(this.courseService.getSearchCourse(location), HttpStatus.OK);
     }
 
+    /**
+     *
+     * @param userAge :: 유저 나이
+     * @return :: 유저 나이에 맞는 난이도의 코스 추천
+     */
+
     @GetMapping("/course/age/{userAge}")
     private ResponseEntity<List<String>> getAgeRankCourse(@PathVariable String userAge){
         return new ResponseEntity<>(this.courseService.getAngeRankCourse(userAge), HttpStatus.OK);
+    }
+
+    /**
+     *
+     * @param courseName :: 코스 이름
+     * @return :: 코스와 1km 이내 화장실과 코스 좌표
+     */
+
+    @GetMapping("/course/SurroundInfo/{courseName}")
+    private ResponseEntity<surroundInfoDto> getSurroundInfo(@PathVariable String courseName){
+        return new ResponseEntity<>(this.courseService.getSurroundInfo(courseName), HttpStatus.OK);
     }
 }

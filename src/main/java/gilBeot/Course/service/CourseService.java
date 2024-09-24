@@ -1,12 +1,18 @@
 package gilBeot.Course.service;
 
 import gilBeot.Course.Repository.CourseRepository;
+import gilBeot.Course.Repository.ToiletRepository;
 import gilBeot.Course.dto.response.courseInfoDto;
 import gilBeot.Course.dto.response.searchCourseDto;
+import gilBeot.Course.dto.response.surroundInfoDto;
 import gilBeot.Course.model.course;
+import gilBeot.Course.model.coursePoint;
+import gilBeot.Course.model.toilet;
+import gilBeot.Course.model.toiletInfo;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
@@ -16,14 +22,17 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class CourseService {
     private final CourseRepository courseRepository;
-
-    public CourseService(CourseRepository courseRepository) {
+    private final ToiletRepository toiletRepository;
+    public CourseService(CourseRepository courseRepository, ToiletRepository toiletRepository) {
         this.courseRepository = courseRepository;
+        this.toiletRepository = toiletRepository;
     }
 
     // 나이별 검색
@@ -135,6 +144,86 @@ public class CourseService {
         } catch (IOException | ParseException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public double distToilet(String x, String y, String x2, String y2){
+        double X1 = Double.parseDouble(x);
+        double Y1 = Double.parseDouble(y);
+        double X2 = Double.parseDouble(x2);
+        double Y2 = Double.parseDouble(y2);
+
+        double dLat = Math.toRadians(X2 - X1);
+        double dLon = Math.toRadians(Y2 - Y1);
+
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(Math.toRadians(X1)) * Math.cos(Math.toRadians(X2)) *
+                        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+        return 6371 * c; // 거리 반환 (킬로미터)
+    }
+
+    public surroundInfoDto getSurroundInfo(String courseName){
+        surroundInfoDto surroundInfoDto = new surroundInfoDto();
+
+        course now_course = this.courseRepository.findByName(courseName);
+        String city = now_course.getAddress().split("_")[0];
+        System.out.println(city);
+        List<toiletInfo> toiletInfoList = this.toiletRepository.findByCityToilet(city);
+//        if(now_address.contains("서울")){
+//            toiletInfoList = t.getSeoul();
+//        } else if(now_address.contains("부산")){
+//            toiletInfoList = t.getBusan();
+//        } else if(now_address.contains("대구")){
+//            toiletInfoList = t.getDaegu();
+//        } else if(now_address.contains("인천")){
+//            toiletInfoList = t.getIncheon();
+//        } else if(now_address.contains("광주")){
+//            toiletInfoList = t.getGwangju();
+//        } else if(now_address.contains("대전")){
+//            toiletInfoList = t.getDaejeon();
+//        } else if(now_address.contains("울산")){
+//            toiletInfoList = t.getUlsan();
+//        } else if(now_address.contains("세종")){
+//            toiletInfoList = t.getSejong();
+//        } else if(now_address.contains("경기")){
+//            toiletInfoList = t.getGyeonggi();
+//        } else if(now_address.contains("강원")){
+//            toiletInfoList = t.getGangwon();
+//        } else if(now_address.contains("충북")){
+//            toiletInfoList = t.getChungbuk();
+//        } else if(now_address.contains("충남")){
+//            toiletInfoList = t.getChungnam();
+//        } else if(now_address.contains("전북")){
+//            toiletInfoList = t.getJeonbuk();
+//        } else if(now_address.contains("전남")){
+//            toiletInfoList = t.getJeonnam();
+//        } else if(now_address.contains("경북")){
+//            toiletInfoList = t.getGyeongbuk();
+//        } else if(now_address.contains("경남")){
+//            toiletInfoList = t.getGyeongnam();
+//        } else if(now_address.contains("제주")){
+//            toiletInfoList = t.getJeju();
+//        }
+
+        Set<String> set = new HashSet<String>();
+
+        for(coursePoint cp : now_course.getCourseRoot()){
+            surroundInfoDto.addCoursePoint(cp.getX(), cp.getY());
+
+            for(toiletInfo ti : toiletInfoList) {
+                if(ti.getX().isEmpty()) continue;
+                if (distToilet(cp.getX(), cp.getY(), ti.getX(), ti.getY()) < 1.0){
+                    if(!set.contains(ti.getName())) {
+                        System.out.println(ti.getName());
+                        set.add(ti.getName());
+                        surroundInfoDto.addToiletPoint(ti.getX(), ti.getY());
+                    }
+                }
+            }
+        }
+
+        return surroundInfoDto;
     }
 
     static class Point {
