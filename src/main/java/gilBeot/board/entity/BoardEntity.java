@@ -18,11 +18,11 @@ public class BoardEntity extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "board_id")
     private Long id;
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String title;
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String content;
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String author; //작성자(usernmame)
     // 게시글과 댓글의 관계 (일대다)
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -31,6 +31,6 @@ public class BoardEntity extends BaseEntity{
     // 댓글 추가
     public void addComment(CommentEntity comment) {
         this.comments.add(comment);
-        comment.setBoard(this);
+        comment.setBoard(this); // CommentEntity에 BoardEntity 설정
     }
 }

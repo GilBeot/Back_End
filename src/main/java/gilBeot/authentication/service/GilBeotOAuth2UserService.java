@@ -29,18 +29,7 @@ public class GilBeotOAuth2UserService extends DefaultOAuth2UserService {
 
         OAuth2User oAuth2User = super.loadUser(userRequest);
 
-        System.out.println(oAuth2User);
-
-        String registrationId = userRequest.getClientRegistration().getRegistrationId();
-        System.out.println("registrationId = " + registrationId);
-
-        OAuth2Response oAuth2Response = null;
-
-        if (registrationId.equals("kakao")) {
-            oAuth2Response = new KakaoResponseDto(oAuth2User.getAttributes()); //카카오 DTO
-        } else {
-            return null;
-        }
+        OAuth2Response oAuth2Response = new KakaoResponseDto(oAuth2User.getAttributes());
 
         String username = oAuth2Response.getProvider() + " " + oAuth2Response.getProviderId();
         Optional<MemberDomain> existDataOptional = memberRepository.findByUsername(username); //DB에 해당 유저가 이미 로그인해서 존재했는지 조회
@@ -49,7 +38,7 @@ public class GilBeotOAuth2UserService extends DefaultOAuth2UserService {
 
             MemberDomain newMember = MemberDomain.builder()
                     .username(username)
-                    .email("kakaoLogin@email.com")
+                    .email(oAuth2Response.getEmail())
                     .password("kakaoLogin")
                     .role("ROLE_USER")
                     .build();
@@ -58,6 +47,7 @@ public class GilBeotOAuth2UserService extends DefaultOAuth2UserService {
 
             SignupRequestDto signupRequestDto = SignupRequestDto.builder()
                     .username(username)
+                    .email(oAuth2Response.getEmail())
                     .role("ROLE_USER")
                     .build();
 

@@ -32,4 +32,10 @@ public class MemberRepositoryImpl implements MemberRepository{
         //map()은 Optional의 메서드로, Optional 내부의 값이 있을 때만 변환을 적용하고, 값이 없으면 아무런 동작도 하지 않으며 Optional.empty()를 그대로 반환
     }
 
+    @Override
+    public Optional<MemberDomain> findByEmail(String email) {
+        return memberJpaRepository.findByEmail(email)
+                .map(memberConverter::toDomain);
+    }
+
 }
