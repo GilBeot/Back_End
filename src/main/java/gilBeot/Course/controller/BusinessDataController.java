@@ -54,7 +54,15 @@ public class BusinessDataController {
     }
     @GetMapping("/courseRoot")
     private void courseRoot() throws IOException, URISyntaxException, ParserConfigurationException, SAXException {
-        this.businessDataService.courseRoot();
+        for(int i = 1; i < 306; i++){
+            this.businessDataService.courseRoot(i - 1, i);
+        }
+//        this.businessDataService.courseRoot(51, 100);
+//        this.businessDataService.courseRoot(101, 150);
+//        this.businessDataService.courseRoot(151, 200);
+//        this.businessDataService.courseRoot(201, 250);
+//        this.businessDataService.courseRoot(251, 300);
+//        this.businessDataService.courseRoot(301, 306);
     }
 
     @GetMapping("/test")

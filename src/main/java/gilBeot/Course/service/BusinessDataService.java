@@ -347,10 +347,12 @@ public class BusinessDataService {
     }
 
     @Transactional
-    public void courseRoot() throws IOException, URISyntaxException, ParserConfigurationException, SAXException {
+    public void courseRoot(int start, int end) throws IOException, URISyntaxException, ParserConfigurationException, SAXException {
         List<course> AllCourse = this.courseRepository.findAll();
 
-        for(course c : AllCourse){
+        for(int idx = start; idx < end; idx++){
+            course c = AllCourse.get(idx);
+            try{
             URL Url = new URL(c.getGpxLink());
 
             ResponseEntity<String> result = this.restClient.get()
@@ -364,7 +366,7 @@ public class BusinessDataService {
                 xml.append(splitString[i] + "\n");
             }
 
-            try{
+
                 DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                 DocumentBuilder builder = factory.newDocumentBuilder();
                 Document document = builder.parse(new InputSource(new StringReader(xml.toString())));
@@ -384,9 +386,11 @@ public class BusinessDataService {
                             .build());
                 }
             }catch (Exception e){
-
+                System.out.println("오류가 났지만 넘어갑니다.");
             }
         }
+
+        System.out.println("코스 좌표 삽입 완료");
     }
 
     public List<toiletInfo> test(String city){
