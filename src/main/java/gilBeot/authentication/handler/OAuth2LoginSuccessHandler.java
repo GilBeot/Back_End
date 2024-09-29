@@ -37,8 +37,13 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 
         String token = jwtUtil.createJwt(username, role, 60*60*60L);
 
+//        response.setHeader("Authorization", "Bearer " + token);
         response.addCookie(createCookie("Authorization", token));
-        response.sendRedirect("http://localhost:8080/success"); //프론트 측의 특정 URL로 리다이렉팅해라
+//        response.sendRedirect("http://localhost:8080/api/v1/membersmyPage"); //프론트 측의 특정 URL로 리다이렉팅해라
+//        response.setContentType("application/json");
+//        response.setCharacterEncoding("UTF-8");
+//        response.getWriter().write("{\"token\": \"" + token + "\"}");
+
     }
 
     private Cookie createCookie(String key, String value) {
@@ -48,6 +53,8 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         //cookie.setSecure(true);
         cookie.setPath("/");
         cookie.setHttpOnly(true);
+        // JWT 로그에 출력
+        System.out.println("OAuth2LoginSuccessHandler에서 생성한 JWT: " + value);
 
         return cookie;
     }

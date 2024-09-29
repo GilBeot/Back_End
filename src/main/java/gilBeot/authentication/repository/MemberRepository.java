@@ -14,4 +14,5 @@ public interface MemberRepository {
 
     Optional<MemberDomain> findByUsername(String username);
 
+    Optional<MemberDomain> findByEmail(String email);
 }

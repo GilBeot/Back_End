@@ -25,22 +25,22 @@ public class BoardController {
     }
 
     // 게시글 삭제
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        boardService.delete(id);
+    @DeleteMapping("/{board_id}")
+    public ResponseEntity<Void> delete(@PathVariable Long board_id) {
+        boardService.delete(board_id);
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 
     // 게시글 수정
-    @PutMapping("/{id}")
-    public ResponseEntity<BoardResponseDto> update(@PathVariable Long id, @RequestBody BoardRequestDto boardRequestDto) {
-        return ResponseEntity.status(HttpStatus.OK).body(boardService.update(id, boardRequestDto));
+    @PutMapping("/{board_id}")
+    public ResponseEntity<BoardResponseDto> update(@PathVariable Long board_id, @RequestBody BoardRequestDto boardRequestDto) {
+        return ResponseEntity.status(HttpStatus.OK).body(boardService.update(board_id, boardRequestDto));
     }
 
     // 게시글 단건 조회
-    @GetMapping("/{id}")
-    public ResponseEntity<BoardResponseDto> findById(@PathVariable Long id) {
-        BoardResponseDto boardResponseDto = boardService.findById(id);
+    @GetMapping("/{board_id}")
+    public ResponseEntity<BoardResponseDto> findById(@PathVariable Long board_id) {
+        BoardResponseDto boardResponseDto = boardService.findById(board_id);
         return ResponseEntity.status(HttpStatus.OK).body(boardResponseDto);
     }
 

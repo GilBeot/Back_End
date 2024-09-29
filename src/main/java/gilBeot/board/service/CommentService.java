@@ -1,11 +1,12 @@
 package gilBeot.board.service;
 
-import gilBeot.board.entity.CommentEntity;
+import gilBeot.board.domain.dto.request.CommentRequestDto;
+import gilBeot.board.domain.dto.response.CommentResponseDto;
 
 public interface CommentService {
 
-    CommentEntity addComment(Long boardId, String content, String author); // 댓글 작성
+    CommentResponseDto addComment(Long boardId, CommentRequestDto commentRequestDto); // 댓글 작성
 
-    CommentEntity addReply(Long parentCommentId, String content, String author); // 대댓글 작성
+    CommentResponseDto addReply(Long parentCommentId, CommentRequestDto commentRequestDto);
 
 }

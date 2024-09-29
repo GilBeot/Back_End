@@ -39,17 +39,22 @@ public class CommentEntity extends BaseEntity {
     @OneToMany(mappedBy = "parentComment", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CommentEntity> childComments = new ArrayList<>();
 
-    // 댓글에 대댓글 추가
-    public void addChildComment(CommentEntity childComment) {
-        this.childComments.add(childComment);
-        childComment.setParentComment(this);
-    }
-
-    private void setParentComment(CommentEntity parentComment) {
-        this.parentComment = parentComment;
-    }
-
+    // Board 설정
     public void setBoard(BoardEntity boardEntity) {
         this.board = boardEntity;
+    }
+
+    public void addChildComment(CommentEntity childComment) {
+        if (!this.childComments.contains(childComment)) {
+            this.childComments.add(childComment);
+            childComment.setParentComment(this); // 대댓글의 부모로 설정
+        }
+    }
+
+    public void setParentComment(CommentEntity parentCommentEntity) {
+        this.parentComment = parentCommentEntity;
+        if (parentCommentEntity != null && !parentCommentEntity.getChildComments().contains(this)) {
+            parentCommentEntity.addChildComment(this);  // 부모 댓글의 자식 댓글 리스트에 추가
+        }
     }
 }

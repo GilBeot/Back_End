@@ -14,6 +14,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -37,6 +38,7 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
@@ -51,19 +53,13 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests(
                 auth -> auth
-//                        .requestMatchers("/admin", "/login").permitAll()
-                        .requestMatchers("/api/v1/members/**", "/api/v1/board/**", "/admin", "/login").permitAll()
+                        .requestMatchers("/admin", "/login").permitAll()
                         .anyRequest().authenticated()
         );
-
-//        http.addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class); // 로그인 필터 앞에 추가
-//        http.addFilterAfter(new JWTFilter(jwtUtil), OAuth2LoginAuthenticationFilter.class);
-//        http.addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
 
         http.addFilterAt(new CustomUsernamePasswordAuthenticationFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class); // 로그인 필터 대체
         http.addFilterAfter(new JWTFilter(jwtUtil), CustomUsernamePasswordAuthenticationFilter.class); // 로그인 필터 뒤에 추가
 //        http.addFilterAfter(new JWTFilter(jwtUtil), OAuth2LoginAuthenticationFilter.class); // 소셜 로그인 뒤에 추가
-
 
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
